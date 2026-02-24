@@ -1,0 +1,29 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Proposal {
+  id              String   @id @default(uuid())
+  name            String
+  status          String   @default("DRAFT") // DRAFT, ASSESSED, COMPLETED, QUOTE_REQUESTED
+  summary         String?  @db.Text
+  timerStartedAt  DateTime?
+  quoteRequestedAt DateTime?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  documents       Document[]
+}
+
+model Document {
+  id         String   @id @default(uuid())
+  filename   String
+  fileUrl    String
+  proposalId String
+  proposal   Proposal @relation(fields: [proposalId], references: [id])
+  createdAt  DateTime @default(now())
+}
